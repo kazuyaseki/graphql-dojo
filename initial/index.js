@@ -10,6 +10,7 @@ type Video {
 
 type Query {
   video: Video
+  videos: [Video]
 }
 
 type Schema {
@@ -17,18 +18,35 @@ type Schema {
 }
 `);
 
+const videoA = {
+  id: '1',
+  title: 'bar',
+  duration: 180,
+  watched: true
+};
+
+const videoB = {
+  id: '1',
+  title: 'bar',
+  duration: 180,
+  watched: true
+};
+
+const videos = [videoA, videoB];
+
 const resolvers = {
   video: () => ({
     id: '1',
     title: 'bar',
     duration: 180,
     watched: true
-  })
+  }),
+  videos: () => videos
 };
 
 const query = `
   query myFirstQuery {
-    video {
+    videos {
       id,
       title,
       duration
@@ -38,5 +56,5 @@ const query = `
 `;
 
 graphql(schema, query, resolvers)
-  .then(result => console.log(result))
+  .then(result => console.log(JSON.stringify(result)))
   .catch(error => console.log(error));
