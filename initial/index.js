@@ -1,27 +1,62 @@
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-const { graphql, buildSchema } = require('graphql');
+const {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLString,
+  GraphQLBoolean
+} = require('graphql');
 
 const PORT = process.env.PORT || 7707;
 const server = express();
 
-const schema = buildSchema(`
-type Video {
-  id: ID,
-  title: String,
-  duration: Int,
-  watched: Boolean
-}
+const videoType = new GraphQLObjectType({
+  name: 'Video',
+  description: 'video',
+  fields: {
+    id: {
+      type: GraphQLID,
+      description: 'id'
+    },
+    title: {
+      type: GraphQLString,
+      description: 'title'
+    },
+    duration: {
+      type: GraphQLInt,
+      description: 'duration in seconds'
+    },
+    watched: {
+      type: GraphQLBoolean,
+      description: 'whether or not the user watched video'
+    }
+  }
+});
 
-type Query {
-  video: Video
-  videos: [Video]
-}
+const queryType = new GraphQLObjectType({
+  name: 'QueryType',
+  description: 'the root query type',
+  fields: {
+    video: {
+      type: videoType,
+      resolve: () =>
+        new Promise(resolve => {
+          resolve({
+            id: '1',
+            title: 'GraphQL',
+            duration: 180,
+            watched: true
+          });
+        })
+    }
+  }
+});
 
-type Schema {
-  query: Query
-}
-`);
+const schema = new GraphQLSchema({
+  query: queryType
+});
 
 const videoA = {
   id: '1',
