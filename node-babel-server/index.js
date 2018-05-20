@@ -1,5 +1,13 @@
-const foo = { foo: 'foo' };
-const bar = { bar: 'bar' };
-const fooBar = { ...foo, ...bar };
+import 'cross-fetch/polyfill';
+import ApolloClient from 'apollo-boost';
 
-console.log(fooBar);
+const client = new ApolloClient({
+  uri: 'https://api.github.com/graphql',
+  request: operation => {
+    operation.setContext({
+      headers: {
+        authorization: `Bearer ${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}`
+      }
+    });
+  }
+});
