@@ -40,6 +40,37 @@ const GET_REPOSITORIES_OF_ORGANIZATION = gql`
   }
 `;
 
+const ADD_STAR = gql`
+  mutation AddStar($repositoryId: ID!) {
+    addStar(input: { starrableId: $repositoryId }) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
+
+const REMOVE_STAR = gql`
+  mutation RemoveStar($repositoryId: ID!) {
+    removeStar(input: { starrableId: $repositoryId }) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
+
+client
+  .mutate({
+    mutation: REMOVE_STAR,
+    variables: {
+      repositoryId: 'MDEwOlJlcG9zaXRvcnk2MzM1MjkwNw=='
+    }
+  })
+  .then(console.log);
+
 client
   .query({
     query: GET_REPOSITORIES_OF_ORGANIZATION,
@@ -52,8 +83,6 @@ client
   .then(result => {
     const { pageInfo, edges } = result.data.organization.repositories;
     const { endCursor, hasNextPage } = pageInfo;
-
-    console.log(edges[0]);
 
     return pageInfo;
   })
